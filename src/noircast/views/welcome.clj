@@ -9,6 +9,6 @@
    (link-to "/welcome" "Welcome")))
 
 (defpage "/welcome" []
-         (common/layout
-          [:h1 "Welcome to NoirCast!"]
-          [:p  "Hope you like it."]))
+  (common/layout
+   [:h1 "Welcome to NoirCast!"]
+   [:p  "Hope you like it."]))
