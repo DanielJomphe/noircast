@@ -1,10 +1,14 @@
 (ns noircast.views.welcome
-  (:require [noircast.views.common :as common]
-            [noir.content.pages :as pages])
+  (:require [noircast.views.common :as common])
   (:use noir.core
         hiccup.core
         hiccup.page-helpers))
 
+(defpage "/" []
+  (common/layout
+   (link-to "/welcome" "Welcome")))
+
 (defpage "/welcome" []
          (common/layout
-           [:p "Welcome to noircast"]))
+          [:h1 "Welcome to NoirCast!"]
+          [:p  "Hope you like it."]))
