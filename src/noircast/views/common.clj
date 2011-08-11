@@ -7,7 +7,8 @@
   (html5
    [:head
     [:title "noircast"]
-    (include-css "/css/reset.css")]
+    (include-css "/css/reset.css")
+    (include-js "/cljs/bootstrap.js")]
    [:body
     [:div#wrapper
      content]]))
