@@ -1,8 +1,5 @@
 (ns noircast.server
-  (:require [noir.server :as server]
-            [noir.util.cljs :as cljs]))
-
-(server/add-middleware cljs/wrap-cljs)
+  (:require [noir.server :as server]))
 
 (server/load-views "src/noircast/views/")
 
