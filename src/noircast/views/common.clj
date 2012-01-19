@@ -14,8 +14,10 @@
               (fn [[url text]] [:li (link-to url text)])
               items)]])
 
+;;; TODO somehow reuse the routing table to automate this?
 (defpartial header-menu []
   (nav-menu [["/"        "home"]
+             ["/status"  "status"]
              ]))
 
 (defpartial footer-menu []
