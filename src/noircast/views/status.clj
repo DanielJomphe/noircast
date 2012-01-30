@@ -28,19 +28,32 @@
 (defpartial error-item [[first-error]]
   [:p.error first-error])
 
+(defn add-attrs
+  ([tag-vector attr value]
+     (assoc-in  tag-vector [1 attr] value))
+  ([tag-vector m]
+     (update-in tag-vector [1] merge m)))
+
 (defpartial status-fields [{:keys [name]} & [flash-msg]]
+  ;;Keep this around for some time...
+  ;;<input id="cur-name" name="cur-name" type="hidden" value="{$memberName}">
   (vali/on-error :name error-item)
   (when (not-empty flash-msg) [:p flash-msg])
   (label      "name" "Server name: ")
-  (text-field "name" name)
-  (submit-button "Rename"))
+  (-> (text-field "name" name)
+      (add-attrs {:placeholder "Nouveau nom"
+                  :required    true}))
+  (submit-button "Changer le nom"))
 
 (defpartial statuses [status & flash]
-  [:section#instances
-   [:header [:h1 "État global du système"]]
-   [:div (status-fields status flash)]
-   (comment
-     (map #([:div (status-fields %)]) status-others))])
+  [:section.self
+   (status-fields status flash)]
+  [:section.others
+   (comment                             ;choose looping strategy
+     (map #([:section.other (status-fields-other %)]) status-others)
+     (for [o status-others]
+       [:section.other (status-fields-other %)]))
+   ])
 
 ;;; Data structure utils
 ;;; TODO find standard stuff that does this or move this elsewhere
@@ -98,17 +111,21 @@
         s (if (not-empty sm) sm empty-status)]
     (update-map-fkv restore-status-val-if-empty! s)))
 
-(defpage [:get "/status"] {:as status}
-  (let [s (setup-state status)]
+(defpage [:get "/status"] {:as params}
+  (let [s (setup-state params)]
     (common/layout
-     (form-to [:post "/status"]
-              (statuses s (session/flash-get))))))
+     [:section#status
+      [:header [:h1 "Status"]]
+      (form-to [:post "/status"]
+               (statuses s (session/flash-get))
+               (comment (hidden-field :cur-name (:name @status-self))) ;use?
+               )])))
 
-(defpage [:post "/status"] {:as status}
-  (let [s    (setup-state status)
+(defpage [:post "/status"] {:as params}
+  (let [s    (setup-state params)
         cur  (restore-status-val-if-empty! :name (:name @status-self))
-        next (:name s)]
-    (when (and (valid-name? s)
+        next (:name params)]
+    (when (and (valid-name? params)
                (not (= cur next)))
       (save-status-val! :name next)
       (session/flash-put! (str "Name changed (" cur " -> " next ")!")))
