@@ -6,21 +6,26 @@
 (defpartial header-status []
   [:section#status
    [:div#debug]
-   [:div#wsMessages]
+   [:div#sync-messages]
    "STATUS"])
 
+(defn transform-link-vector [f [url text]]
+  (f url text))
+
+(defn map-link-vectors [f link-vectors]
+  (map #(transform-link-vector f %) link-vectors))
+
 (defn nav-menu [items]
-  [:nav (unordered-list (map (fn [[url text]] (link-to url text))
-                             items))])
+  [:nav (unordered-list (map-link-vectors link-to items))])
 
 (defn nav-menu-item
-  ([simple-name]
-     [(str "/" simple-name) simple-name])
+  "Defines a Nav Menu Item as a vector pair of [URL Text].
+   Let's call this representation a link vector."
+  ([name]
+     [(str "/" name) name])
   ([name path]
      [name path]))
 
-;;; TODO somehow reuse the routing table to automate this?
-;;; Doing so would probably imply more work and complexity than this.
 (defpartial header-menu []
   (nav-menu [(nav-menu-item "/" "home")
              (nav-menu-item "status")
@@ -30,15 +35,17 @@
   (nav-menu []))
 
 (defpartial layout [& content]
-  (html5 {:lang "fr"} ;; TODO make sure lang is useful; configure
+  (html5 {:lang "fr"}                   ; TODO configure
    [:head
-    ;; TODO make sure server and ring middleware don't override this,
+    ;; TODO implement automated tests to make sure server and
+    ;; middleware don't ever override this,
     ;; especially on Windows. If present in HTTP headers, the value
     ;; should be exactly 'Content-Type: text/html; charset="utf-8"'.
-    ;; Let's evaluate Noir's wrap-utf8 middleware to deprecate this line
+    ;; Ring now automatically sets that Content-Type, so that should
+    ;; be fine.
     [:meta {:charset "utf-8"}]
     [:title "noircast"]                 ;TODO configure
-    ;; TODO decide: Html5Boilerplate and/or Twitter's Bootstrap
+    ;; TODO use Twitter Bootstrap
     (include-css "/css/reset.css")
     (include-js "/cljs/bootstrap.js")]
    [:body
