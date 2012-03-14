@@ -117,7 +117,7 @@
      [:section#status
       [:header [:h1 "Status"]]
       (form-to [:post "/status"]
-               (statuses s (session/flash-get))
+               (statuses s (session/flash-get :status-name))
                (comment (hidden-field :cur-name (:name @status-self))) ;use?
                )])))
 
@@ -128,5 +128,5 @@
     (when (and (valid-name? params)
                (not (= cur next)))
       (save-status-val! :name next)
-      (session/flash-put! (str "Name changed (" cur " -> " next ")!")))
+      (session/flash-put! :status-name (str "Name changed (" cur " -> " next ")!")))
     (render "/status" (assoc s :name next))))
