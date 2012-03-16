@@ -40,10 +40,10 @@
   (vali/on-error :name error-item)
   (when (not-empty flash-msg) [:p flash-msg])
   (label      "name" "Server name: ")
-  (-> (text-field "name" name)
+  (-> (text-field {:tabindex 1} "name" name)
       (add-attrs {:placeholder "Nouveau nom"
                   :required    true}))
-  (submit-button "Changer le nom"))
+  (submit-button {:tabindex 2} "Changer le nom"))
 
 (defpartial statuses [status & flash]
   [:section.self
