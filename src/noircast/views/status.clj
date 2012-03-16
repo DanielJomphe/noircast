@@ -15,10 +15,7 @@
                    :host  ""
                    :state ""})
 
-(def status-self (atom empty-status))
-
-(def status-others (atom [empty-status
-                          empty-status]))
+(def status-self (atom empty-status))   ; in-memory database ;)
 
 (defn valid-name? [{:keys [name]}]
   (vali/rule (vali/min-length? name 5)
@@ -77,14 +74,14 @@
 ;;; State utils
 (defn get-cookie
   "Finds the value for k in the cookie, and returns it sanitized
-   since the cookie comes from the user."
+   since the cookie comes from the user and isn't signed (for now)."
   [k]
   (sanitize (cookies/get k)))
 
 (defn save-status-val!
   "Saves the value for k in status-self and the cookie.
    Provides no durability guarantees for now.
-   Returns v."
+   Returns a truthy value on success."
   [k v]
   (cookies/put!            k v)
   (swap! status-self assoc k v))
@@ -99,7 +96,7 @@
 
 (defn restore-status-val-if-empty!
   ;; TODO find a way to not duplicate parts of documentation.
-  "If v is not empty, returns v. Otherwise,
+  "Returns v if it's not empty. Otherwise,
    Updates status-self with a value for k restored from the cookie.
    If no such value was found in the cookie, leaves status-self untouched.
    Returns the value successfully restored, or nil."
@@ -111,7 +108,8 @@
         s (if (not-empty sm) sm empty-status)]
     (update-map-fkv restore-status-val-if-empty! s)))
 
-(defpage [:get "/status"] {:as params}
+;;; Controllers
+(defpage "/status" {:as params}
   (let [s (setup-state params)]
     (common/layout
      [:section#status
@@ -126,7 +124,8 @@
         cur  (restore-status-val-if-empty! :name (:name @status-self))
         next (:name params)]
     (when (and (valid-name? params)
-               (not (= cur next)))
-      (save-status-val! :name next)
-      (session/flash-put! :status-name (str "Name changed (" cur " -> " next ")!")))
+               (not (= cur next))
+               (save-status-val! :name next))
+      (session/flash-put! :status-name
+                          (str "Name changed (" cur " -> " next ")!")))
     (render "/status" (assoc s :name next))))
