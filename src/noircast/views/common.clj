@@ -25,15 +25,18 @@
 
 (defn nav-menu-item
   "Defines a Nav Menu Item as a vector pair of [URL Text].
+   The name you provide will automatically be capitalized.
    Let's call this representation a link vector."
   ([name]
-     [(str "/" name) name])
+     [(str "/" name)
+      (clojure.string/capitalize name)])
   ([name path]
-     [name path]))
+     [path
+      (clojure.string/capitalize name)]))
 
 (defpartial header-menu []
-  (nav-menu [(nav-menu-item "/" "home")
-             (nav-menu-item "status")
+  (nav-menu [(nav-menu-item "home" "/")
+             (nav-menu-item "status")]
             [:li (header-status)]))
 
 (defpartial footer-menu []
@@ -49,7 +52,7 @@
     ;; Ring now automatically sets that Content-Type, so that should
     ;; be fine.
     [:meta {:charset "utf-8"}]
-    [:title "noircast"]                 ;TODO configure
+    [:title "noircast"]                 ; TODO configure
     (include-css "/css/bootstrap.css")
     (include-js "/js/bootstrap.js")
     (include-js "/cljs/bootstrap.js")]
