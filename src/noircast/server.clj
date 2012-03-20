@@ -12,7 +12,7 @@
 
 (comment ; for running through the REPL instead of `lein run`...
   (def server (-main))
-  (def server (-main "dev"  "simple"))  ; the default
+  (def server (-main "dev"  "simple"))  ; defaults
   (def server (-main "dev"  "advanced"))
   (def server (-main "prod" "simple"))
   (def server (-main "prod" "advanced"))

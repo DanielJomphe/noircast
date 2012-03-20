@@ -5,4 +5,4 @@
         hiccup.page))
 
 (defpage "/" []
-  (common/layout))
+  (common/layout [:h1 "See the Status page."]))

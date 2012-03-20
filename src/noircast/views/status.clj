@@ -23,7 +23,7 @@
   (not (vali/errors? :name)))
 
 (defpartial error-item [[first-error]]
-  [:p.error first-error])
+  [:p.help-inline.error first-error])
 
 (defn add-attrs
   ([tag-vector attr value]
@@ -31,16 +31,31 @@
   ([tag-vector m]
      (update-in tag-vector [1] merge m)))
 
+(defn control-group-tag                 ; TODO this is lame; rework
+  [tag no-error? success?]
+  (keyword (str tag ".control-group" (if no-error?
+                                       (if success?
+                                         ".success"
+                                         "")
+                                       ".error"))))
+
 (defpartial status-fields [{:keys [name]} & [flash-msg]]
   ;;Keep this around for some time...
   ;;<input id="cur-name" name="cur-name" type="hidden" value="{$memberName}">
-  (vali/on-error :name error-item)
-  (when (not-empty flash-msg) [:p flash-msg])
-  (label      "name" "Server name: ")
-  (-> (text-field {:tabindex 1} "name" name)
-      (add-attrs {:placeholder "Nouveau nom"
-                  :required    true}))
-  (submit-button {:tabindex 2} "Changer le nom"))
+  [(control-group-tag "div"
+                      (valid-name? {:name name})
+                      (and (not-empty (first flash-msg))))
+   [:label.control-label {:for "name"} "Server name: "]
+   [:div.controls
+    [:div.input-append
+     (-> (text-field {:tabindex 1} "name" name)
+         (add-attrs {:placeholder "Nouveau nom"
+                     :required    true}))
+     [:button.btn {:type "submit" :tabindex 2}
+      [:i.icon-pencil] " Renommer"]]
+    (vali/on-error :name error-item)
+    (when (not-empty (first flash-msg))
+      [:span.help-inline flash-msg])]])
 
 (defpartial statuses [status & flash]
   [:section.self
@@ -110,14 +125,13 @@
 
 ;;; Controllers
 (defpage "/status" {:as params}
-  (let [s (setup-state params)]
+  (let [s (setup-state params)
+        f (form-to [:post "/status"]
+                   (statuses s (session/flash-get :status-name)))]
     (common/layout
      [:section#status
       [:header [:h1 "Status"]]
-      (form-to [:post "/status"]
-               (statuses s (session/flash-get :status-name))
-               (comment (hidden-field :cur-name (:name @status-self))) ;use?
-               )])))
+      (assoc f 0 :form.form-horizontal)])))
 
 (defpage [:post "/status"] {:as params}
   (let [s    (setup-state params)
