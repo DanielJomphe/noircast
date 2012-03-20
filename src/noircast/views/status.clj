@@ -10,6 +10,9 @@
         hiccup.form
         hiccup.page))
 
+;;; TODO Feels like I'm complecting quite a lot the local state below.
+;;; Would it be simpler to not introduce all those DSL-like fns?
+
 (def empty-status {:id    ""
                    :name  ""
                    :host  ""
@@ -31,30 +34,29 @@
   ([tag-vector m]
      (update-in tag-vector [1] merge m)))
 
-(defn control-group-tag                 ; TODO this is lame; rework
+(defn control-group-tag
   [tag no-error? success?]
-  (keyword (str tag ".control-group" (if no-error?
-                                       (if success?
-                                         ".success"
-                                         "")
-                                       ".error"))))
+  (let [success-class (cond
+                       (and no-error? success?) ".success"
+                       (not no-error?)          ".error"
+                       :else                    "")]
+    (keyword (str tag ".control-group" success-class))))
 
 (defpartial status-fields [{:keys [name]} & [flash-msg]]
-  ;;<input id="cur-name" name="cur-name" type="hidden" value="{$memberName}">
-  [(control-group-tag "div"
-                      (valid-name? {:name name})
-                      (and (not-empty (first flash-msg))))
-   [:label.control-label {:for "name"} "Server name: "]
-   [:div.controls
-    [:div.input-append
-     (-> (text-field {:tabindex 1} "name" name)
-         (add-attrs {:placeholder "Nouveau nom"
-                     :required    true}))
-     [:button.btn {:type "submit" :tabindex 2}
-      [:i.icon-pencil] " Renommer"]]
-    (vali/on-error :name error-item)
-    (when (not-empty (first flash-msg))
-      [:span.help-inline flash-msg])]])
+  (let [has-no-error? (valid-name? {:name name})
+        has-flash? (not-empty (first flash-msg))]
+    [(control-group-tag "div" has-no-error? has-flash?)
+     [:label.control-label {:for "name"} "Server name: "]
+     [:div.controls
+      [:div.input-append
+       (-> (text-field {:tabindex 1} "name" name)
+           (add-attrs {:placeholder "New name"
+                       :required    true}))
+       [:button.btn {:type "submit" :tabindex 2}
+        [:i.icon-pencil] " Rename"]]
+      (vali/on-error :name error-item)
+      (when (and has-no-error? has-flash?)
+        [:span.help-inline flash-msg])]]))
 
 (defpartial statuses [status & flash]
   [:section.self
@@ -139,5 +141,5 @@
     (when (and (valid-name? params)
                (not (= cur next))
                (save-status-val! :name next))
-      (session/flash-put! :status-name "Succès"))
+      (session/flash-put! :status-name "Success"))
     (render "/status" (assoc s :name next))))
