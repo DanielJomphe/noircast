@@ -1,9 +1,9 @@
 (ns noircast.views.status
   (:require [noircast.views.common :as common]
-            [noir.validation :as vali]
-            [noir.response   :as resp]
-            [noir.session    :as session]
-            [noir.cookies    :as cookies])
+            [noir.validation       :as vali]
+            [noir.response         :as resp]
+            [noir.session          :as session]
+            [noir.cookies          :as cookies])
   (:use [clojure.string :only [trim]]
         noir.core
         hiccup.core
@@ -40,7 +40,6 @@
                                        ".error"))))
 
 (defpartial status-fields [{:keys [name]} & [flash-msg]]
-  ;;Keep this around for some time...
   ;;<input id="cur-name" name="cur-name" type="hidden" value="{$memberName}">
   [(control-group-tag "div"
                       (valid-name? {:name name})
@@ -140,6 +139,5 @@
     (when (and (valid-name? params)
                (not (= cur next))
                (save-status-val! :name next))
-      (session/flash-put! :status-name
-                          (str "Name changed (" cur " -> " next ")!")))
+      (session/flash-put! :status-name "Succès"))
     (render "/status" (assoc s :name next))))
