@@ -7,8 +7,8 @@
   (:use [clojure.string :only [trim]]
         noir.core
         hiccup.core
-        hiccup.form-helpers
-        hiccup.page-helpers))
+        hiccup.form
+        hiccup.page))
 
 (def empty-status {:id    ""
                    :name  ""

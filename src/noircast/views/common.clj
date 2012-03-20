@@ -1,7 +1,8 @@
 (ns noircast.views.common
   (:use noir.core
         hiccup.core
-        hiccup.page-helpers))
+        hiccup.page
+        hiccup.element))
 
 (defpartial header-status []
   [:section#status
