@@ -28,7 +28,7 @@
 (defpartial error-item [[first-error]]
   [:p.help-inline.error first-error])
 
-(defn add-attrs
+(defn update-attrs
   ([tag-vector attr value]
      (assoc-in  tag-vector [1 attr] value))
   ([tag-vector m]
@@ -50,8 +50,9 @@
      [:div.controls
       [:div.input-append
        (-> (text-field {:tabindex 1} "name" name)
-           (add-attrs {:placeholder "New name"
-                       :required    true}))
+           (update-attrs {:class       "input-medium"
+                          :placeholder "New name"
+                          :required    true}))
        [:button.btn {:type "submit" :tabindex 2}
         [:i.icon-pencil] " Rename"]]
       (vali/on-error :name error-item)
