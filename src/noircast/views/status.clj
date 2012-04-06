@@ -29,23 +29,23 @@
   [:p.help-inline.error first-error])
 
 (defn update-attrs
-  ([tag-vector attr value]
-     (assoc-in  tag-vector [1 attr] value))
-  ([tag-vector m]
-     (update-in tag-vector [1] merge m)))
+  ([element-vector attr value]
+     (assoc-in  element-vector [1 attr] value))
+  ([element-vector m]
+     (update-in element-vector [1] merge m)))
 
-(defn control-group-tag
-  [tag no-error? success?]
+(defn control-group-element
+  [element no-error? success?]
   (let [success-class (cond
                        (and no-error? success?) ".success"
                        (not no-error?)          ".error"
                        :else                    "")]
-    (keyword (str tag ".control-group" success-class))))
+    (keyword (str element ".control-group" success-class))))
 
 (defpartial status-fields [{:keys [name]} & [flash-msg]]
   (let [has-no-error? (valid-name? {:name name})
         has-flash? (not-empty (first flash-msg))]
-    [(control-group-tag "div" has-no-error? has-flash?)
+    [(control-group-element "div" has-no-error? has-flash?)
      [:label.control-label {:for "name"} "Server name: "]
      [:div.controls
       [:div.input-append

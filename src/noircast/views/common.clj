@@ -45,12 +45,6 @@
 (defpartial layout [& content]
   (html5 {:lang "en"}                   ; TODO configure
    [:head
-    ;; TODO implement automated tests to make sure server and
-    ;; middleware don't ever override this,
-    ;; especially on Windows. If present in HTTP headers, the value
-    ;; should be exactly 'Content-Type: text/html; charset="utf-8"'.
-    ;; Ring now automatically sets that Content-Type, so that should
-    ;; be fine.
     [:meta {:charset "utf-8"}]
     [:title "noircast"]                 ; TODO configure
     (include-css "/css/bootstrap.css")
