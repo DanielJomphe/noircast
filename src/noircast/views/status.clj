@@ -49,10 +49,11 @@
      [:label.control-label {:for "name"} "Server name: "]
      [:div.controls
       [:div.input-append
-       (-> (text-field {:tabindex 1} "name" name)
-           (update-attrs {:class       "input-medium"
-                          :placeholder "New name"
-                          :required    true}))
+       (update-attrs
+        (text-field {:tabindex 1} "name" name)
+        {:class       "input-medium"
+         :placeholder "New name"
+         :required    true})
        [:button.btn {:type "submit" :tabindex 2}
         [:i.icon-pencil] " Rename"]]
       (vali/on-error :name error-item)
@@ -140,7 +141,7 @@
         cur  (restore-status-val-if-empty! :name (:name @status-self))
         next (:name params)]
     (when (and (valid-name? params)
-               (not (= cur next))
+               (not= cur next)
                (save-status-val! :name next))
       (session/flash-put! :status-name "Success"))
     (render "/status" (assoc s :name next))))
