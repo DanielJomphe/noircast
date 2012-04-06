@@ -43,7 +43,7 @@
   (nav-menu []))
 
 (defpartial layout [& content]
-  (html5 {:lang "fr"}                   ; TODO configure
+  (html5 {:lang "en"}                   ; TODO configure
    [:head
     ;; TODO implement automated tests to make sure server and
     ;; middleware don't ever override this,
