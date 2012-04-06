@@ -73,7 +73,7 @@
 ;;; Data structure utils
 ;;; TODO find standard stuff that does this or move this elsewhere
 (defn update-map-fk [f m]
-  (reduce (fn [a [k v]] (assoc a k (f k))) m m))
+  (reduce (fn [a [k _]] (assoc a k (f k))) m m))
 
 (defn update-map-fv [f m]
   (reduce (fn [a [k v]] (assoc a k (f v))) m m))
